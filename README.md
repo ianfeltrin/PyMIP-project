@@ -1,7 +1,6 @@
 # PyMIP - Python Medical Image Processing
 Learning the fundamentals of Medical Image Processing with Python by analyzing X-ray images.
 
-![Demonstração do Projeto](URL_DA_IMAGEM_DE_RESULTADO_AQUI)
 
 ## 🚀 About the project
 
