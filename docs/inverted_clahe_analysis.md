@@ -23,7 +23,7 @@ The following techniques were applied to standard grayscale X-ray images:
 
 By applying these techniques, we can observe significant differences that suggest distinct use cases for diagnosis.
 
-`![Comparative analysis](https://github.com/ianfeltrin/PyMIP-project/blob/main/docs/Figure_1.png?raw=true)`
+![Comparative analysis](https://github.com/ianfeltrin/PyMIP-project/blob/main/docs/Figure_1.png?raw=true)
 
 #### 3.1. Standard CLAHE: Enhancing Soft Tissues
 
