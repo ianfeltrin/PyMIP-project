@@ -7,37 +7,46 @@
 
 ### 1. Introdução: O Problema do Ruído em Imagens Médicas
 
-Uma etapa fundamental em qualquer pipeline de processamento de imagens médicas é a redução de ruído, que pode ser gerado por sensores, transmissão ou mesmo pela própria técnica de aquisição da imagem. Contudo, o ruído não é uniforme. Diferentes tipos de ruído, como o **Gaussiano** (uma "estática" granulada) e o **Sal e Pimenta** (pixels pretos e brancos aleatórios), são combatidos de forma mais eficaz por filtros específicos (`GaussianBlur` vs. `MedianBlur`). A escolha manual de um filtro por um especialista é ineficiente, subjetiva e não escalável em um ambiente clínico de alto volume.
+Imagens médicas digitais são suscetíveis a diferentes tipos de ruído, que podem comprometer a análise visual e automática. A escolha de um filtro de limpeza adequado é crucial, pois um filtro otimizado para um tipo de ruído pode ser ineficaz em outro. Este projeto explora uma solução de Machine Learning para automatizar essa escolha.
 
-### 2. Metodologia
+![Comparativo dos Tipos de Ruído](https://github.com/ianfeltrin/PyMIP-project/blob/main/data/processed/filters.png?raw=true)
 
-Para automatizar a escolha do filtro, foi desenvolvida a hipótese de que o **histograma** de uma imagem pode servir como uma "assinatura digital" para diagnosticar o tipo de ruído. A solução proposta foi construir um modelo de Machine Learning para classificar essa assinatura.
+### 2. Metodologia e Análise Forense
 
-#### 2.1. Solução Proposta
-Um classificador de Machine Learning foi proposto para analisar o histograma de uma imagem de entrada e predizer se ela contém ruído Gaussiano ou Sal e Pimenta, permitindo a aplicação automática do filtro de limpeza mais adequado.
+A hipótese central é que o **histograma** de uma imagem serve como uma "assinatura digital" para diagnosticar o tipo de ruído. Para provar isso, foi construído um classificador SVM (Support Vector Machine) treinado para reconhecer essas assinaturas.
 
-#### 2.2. Criação do Dataset
-Foi gerado um dataset sintético com 100 imagens de Raio-X: 50 corrompidas com ruído Gaussiano e 50 com ruído Sal e Pimenta.
+#### 2.1. Extração de Features: A Assinatura do Histograma
 
-#### 2.3. Extração de Features
-Para cada imagem, o histograma de 256 bins foi calculado e normalizado para uma escala de 0 a 1. Este vetor de 256 pontos serviu como o vetor de *features* (as "pistas") para o modelo.
+**Assinatura do Ruído Gaussiano:**
+Este ruído tende a "achatar e alargar" o histograma original. Os picos se tornam mais baixos e as curvas mais suaves, como se o gráfico tivesse sido "borrado".
 
-#### 2.4. Treinamento do Modelo
-Um classificador SVM (Support Vector Machine) com kernel linear foi treinado utilizando 80% do dataset. Os 20% restantes foram reservados para um teste "cego" de validação.
+![Histograma do Ruído Gaussiano](https://github.com/ianfeltrin/PyMIP-project/blob/main/data/processed/hist_gaussian.png?raw=true)
 
-### 3. Resultados e Análise
+**Assinatura do Ruído Sal e Pimenta:**
+Este ruído cria pixels nos valores extremos. Sua assinatura no histograma é inconfundível: dois picos agudos e isolados exatamente nos valores 0 (pimenta/preto) e 255 (sal/branco).
 
-O modelo treinado, ao ser avaliado com o conjunto de teste de 20% (imagens que ele nunca havia visto), alcançou uma **acurácia de 100%**. Ele foi capaz de diferenciar perfeitamente entre os dois tipos de ruído com base apenas em seus histogramas, provando a validade da hipótese.
+![Histograma do Ruído Sal e Pimenta](https://github.com/ianfeltrin/PyMIP-project/blob/main/data/processed/hist_s&p.png?raw=true)
 
-### 4. Conclusão e Próximos Passos
+#### 2.2. Validação da Escolha do Filtro
 
-Este experimento comprova que a análise de histogramas é uma abordagem viável e altamente eficaz para a classificação automática de tipos de ruído em imagens, validando o conceito do "Pré-processador Inteligente".
+Com as assinaturas identificadas, testamos a eficácia do filtro correto para cada caso. O `GaussianBlur` se mostrou ideal para o ruído Gaussiano, enquanto o `MedianBlur` foi superior para o Sal e Pimenta.
 
-**Próximos Passos:**
-* Expandir o dataset para incluir mais tipos de ruído e também imagens limpas.
-* Integrar este classificador ao "Otimizador de Análise de Fraturas", para que ele limpe a imagem automaticamente antes de gerar as visões de análise.
-* Explorar o uso de Redes Neurais (Deep Learning) para esta mesma tarefa e comparar a performance.
+![Validação dos Filtros de Limpeza](https://github.com/ianfeltrin/PyMIP-project/blob/main/data/processed/clean_images.png?raw=true)
 
+#### 2.3. Treinamento do Modelo SVM
+Com a prova de que cada ruído tem uma assinatura e um remédio específico, um classificador SVM foi treinado com os 100 histogramas (vetores de 256 posições) como dados de entrada e os rótulos "Gaussiano" (0) ou "Sal e Pimenta" (1) como gabarito.
+
+---
+### 3. Resultados: Um Classificador com 100% de Acurácia
+
+O modelo, treinado com 80% dos dados, foi validado com os 20% restantes e alcançou uma **acurácia de 100%**, provando ser capaz de diagnosticar o tipo de ruído com perfeição.
+
+![Fluxograma da Solução](https://github.com/ianfeltrin/PyMIP-project/blob/main/data/raw/fluxogram.png?raw=true)
+
+---
+### 4. Conclusão
+
+Este experimento valida com sucesso o conceito do "Pré-processador Inteligente". Demonstra-se que é possível treinar um modelo de Machine Learning para, de forma autônoma, identificar diferentes tipos de ruído e permitir a aplicação do filtro mais eficaz, um passo fundamental para a criação de pipelines de processamento de imagens mais robustos.
 
 # PyMIP Project: An Intelligent Pre-processor for Adaptive Noise Reduction
 
@@ -48,38 +57,43 @@ Este experimento comprova que a análise de histogramas é uma abordagem viável
 
 ### 1. Introduction: The Problem of Noise in Medical Imaging
 
-A fundamental step in any medical image processing pipeline is noise reduction. However, noise is not uniform; different sources (e.g., sensors, transmission) generate various artifacts. Two common forms are:
+A fundamental step in any medical image processing pipeline is noise reduction. However, noise is not uniform; different sources generate various artifacts. This project explores a Machine Learning solution to automate the selection of the appropriate filter for a given noise type.
 
-* **Gaussian Noise:** A "static-like" grain that affects all pixels.
-* **Salt & Pepper Noise:** Random black (0) and white (255) pixels appearing on the image.
-
-Each noise type is best countered by a specific filter (`GaussianBlur` for Gaussian, `MedianBlur` for Salt & Pepper). Manually selecting a filter is inefficient, subjective, and not scalable in a high-volume clinical environment.
+![Noise Type Comparison](https://github.com/ianfeltrin/PyMIP-project/blob/main/data/processed/filters.png?raw=true)
 
 ### 2. Methodology
 
-To automate the filter selection process, the hypothesis was that an image's **histogram** could serve as a "digital signature" to diagnose the noise type. The proposed solution was to build a Machine Learning model to classify this signature.
+To automate the filter selection, the hypothesis was that an image's **histogram** could serve as a "digital signature" for its noise type. An SVM classifier was trained to recognize these signatures.
 
-#### 2.1. Proposed Solution
-An ML classifier was proposed to analyze an input image's histogram and predict whether it contains Gaussian or Salt & Pepper noise, enabling the automatic application of the optimal cleaning filter.
+#### 2.1. Feature Extraction: The Histogram Signature
 
-#### 2.2. Dataset Creation
-A synthetic dataset of 100 X-ray images was generated: 50 corrupted with Gaussian noise and 50 with Salt & Pepper noise.
+**Gaussian Noise Signature:** This noise type tends to "flatten and widen" the original histogram, creating a smoother, more spread-out distribution.
 
-#### 2.3. Feature Extraction
-For each image, its 256-bin histogram was calculated and normalized to a 0-1 scale. This 256-point vector served as the feature vector (the "clues") for the model.
+![Gaussian Noise Histogram](https://github.com/ianfeltrin/PyMIP-project/blob/main/data/processed/hist_gaussian.png?raw=true)
 
-#### 2.4. Model Training
-A Support Vector Machine (SVM) classifier with a linear kernel was trained using 80% of the dataset. The remaining 20% was held out for a blind validation test.
+**Salt & Pepper Noise Signature:** This noise creates pixels at extreme values. Its histogram signature is unmistakable: two sharp, isolated **spikes** at the 0 (pepper/black) and 255 (salt/white) bins.
 
+![Salt_and_Pepper_Noise_Histogram](https://github.com/ianfeltrin/PyMIP-project/blob/main/data/processed/hist_s&p.png?raw=true)
+
+#### 2.2. Filter Choice Validation
+With the signatures identified, tests confirmed that `GaussianBlur` is ideal for Gaussian noise, while `MedianBlur` is superior for Salt & Pepper noise.
+
+![Filter Validation Results](https://github.com/ianfeltrin/PyMIP-project/blob/main/data/processed/clean_images.png?raw=true)
+
+#### 2.3. SVM Model Training
+An SVM classifier was trained on a synthetic dataset of 100 images. The model used the 256-bin histograms as input features and the noise types ("Gaussian" or "S&P") as labels. The data was split 80/20 for training and testing.
+
+---
 ### 3. Results and Analysis
 
-The trained model, when evaluated on the 20% test set, achieved an **accuracy of 100%**. It was able to perfectly differentiate between the two noise types based solely on their histogram signatures, proving the hypothesis to be valid.
+The trained model, when evaluated on the 20% test set, achieved an **accuracy of 100%**. It was able to perfectly differentiate between the two noise types based solely on their histogram signatures.
 
+---
 ### 4. Conclusion and Future Work
 
-This experiment proves that histogram analysis is a viable and highly effective approach for the automatic classification of noise types. The 100% accuracy validates the "Intelligent Pre-processor" concept.
+This experiment successfully validates the "Intelligent Pre-processor" concept. It demonstrates that an ML model can autonomously identify noise types and enable the application of the most effective filter.
 
 **Future Work:**
-* Expand the dataset to include more noise types and also clean images.
-* Integrate this classifier into the "Fracture Analysis Optimizer" to automatically denoise images before generating analysis views.
-* Explore the use of Neural Networks (Deep Learning) for this same task and compare performance.
+* Expand the dataset to include more noise types.
+* Integrate this classifier into the "Fracture Analysis Optimizer".
+* Explore the use of Deep Learning for this same task.
