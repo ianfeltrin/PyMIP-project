@@ -2,7 +2,7 @@
 
 An open-source repository for exploring and developing solutions in Medical Image Processing, from classic filtering techniques to Machine Learning applications.
 
-![Painel de Análise de Fratura](URL_DO_PAINEL_2X2_AQUI)
+![Painel de Análise de Fratura](https://raw.githubusercontent.com/ianfeltrin/PyMIP-project/refs/heads/main/data/processed/fracture_analyzer_panel.png)
 
 ## 🚀 About This Project
 
@@ -38,7 +38,6 @@ An innovative system that automates a critical pre-processing step. This project
 
 An SVM model was trained on a dataset of histograms from images with different noise types. **The model achieved 100% accuracy** on the test set, successfully proving it can automatically choose the correct noise-reduction filter (`GaussianBlur` vs. `MedianBlur`) for an input image.
 
-![Resultado da Acurácia do Modelo](URL_DA_IMAGEM_DE_100%_AQUI)
 
 * `[Read the full technical analysis for this project here](./docs/smart-preprocessor-analysis.md)`
 
