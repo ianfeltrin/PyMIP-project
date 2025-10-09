@@ -1,33 +1,63 @@
-# PyMIP - Python Medical Image Processing
-Learning the fundamentals of Medical Image Processing with Python by analyzing X-ray images.
+# PyMIP - Python Medical Image Processing 🩺
 
+An open-source repository for exploring and developing solutions in Medical Image Processing, from classic filtering techniques to Machine Learning applications.
 
-## 🚀 About the project
+![Painel de Análise de Fratura](URL_DO_PAINEL_2X2_AQUI)
 
-This is a learning project focused on the fundamentals of Medical Image Processing using Python. The objective is to explore image manipulation and analysis techniques, from basic pixel operations to the segmentation of Regions of Interest (ROI).
+## 🚀 About This Project
 
-This repository documents my learning journey and the practical challenges developed.
+This repository documents my hands-on journey into the world of Medical Image Processing. What started as a fundamental study of pixel manipulation has evolved into the development of practical analysis tools and intelligent systems. The projects here demonstrate a workflow that encompasses research, experimentation, implementation, and documentation.
 
-## ✨ Features
+## ✨ Key Features & Implemented Techniques
 
-At the moment, the scripts in this repository are capable of:
-* **Load and Display images:** Reading various image formats and displaying them with Matplotlib.
-* **Pixels manipulation:** Adjusting brightness/contrast, creating image negatives, and cropping regions.
-* **Local manipulation:** Applying effects to specific areas of the image.
+This project showcases a wide range of implemented techniques, including:
 
-## 🛠️ Libraries used
+* **Classic Image Processing:**
+    * Brightness/Contrast adjustment, Image Inversion, and Cropping.
+    * **Contrast Enhancement:** Histogram Analysis, global Histogram Equalization (`equalizeHist`), and the more advanced **Adaptive Histogram Equalization (CLAHE)**.
+    * **Image Filtering:** Application of smoothing filters (`GaussianBlur`, `MedianBlur`) for noise reduction and sharpening filters with custom **Convolution Kernels**.
+    * **Edge Detection:** Implementation of classic algorithms like `Sobel` and the industry-standard `Canny` edge detector.
+
+* **Machine Learning:**
+    * **Complete ML Pipeline:** Demonstrated the full workflow, including dataset creation, feature extraction, model training, and validation.
+    * **Image Classification:** Trained a **Support Vector Machine (SVM)** classifier using Scikit-learn to automatically identify image properties based on extracted features (like histograms).
+
+## 🔬 Case Studies (Featured Projects)
+
+### 1. Fracture Analysis Optimizer
+
+A proof-of-concept tool designed to assist in medical diagnosis by generating a dashboard of multiple, optimized views from a single X-ray. Each view uses a different processing pipeline to highlight specific features:
+
+* **General Contrast View (CLAHE):** For overall anatomical context.
+* **Contour View (Canny):** To isolate bone outlines and clearly identify structural breaks (fractures).
+* **Fine Detail View (Inverted+CLAHE):** A custom technique to enhance details within dense structures like bone.
+
+### 2. Intelligent Noise Pre-processor
+
+An innovative system that automates a critical pre-processing step. This project stemmed from the hypothesis that an image's histogram can be used as a "fingerprint" to diagnose the type of noise it contains.
+
+An SVM model was trained on a dataset of histograms from images with different noise types. **The model achieved 100% accuracy** on the test set, successfully proving it can automatically choose the correct noise-reduction filter (`GaussianBlur` vs. `MedianBlur`) for an input image.
+
+![Resultado da Acurácia do Modelo](URL_DA_IMAGEM_DE_100%_AQUI)
+
+* `[Read the full technical analysis for this project here](./docs/smart-preprocessor-analysis.md)`
+
+## 🛠️ Technologies Used
 
 * **Language:** Python
-* **Main Libraries:**
+* **Core Libraries:**
     * OpenCV-Python
     * NumPy
     * Matplotlib
+    * Scikit-learn
 
-## 🔮 Next steps (Roadmap)
+## 🔮 Project Roadmap
 
-* [ ] Implement contrast enhancement filters (Histogram Equalization).
-* [ ] Explore automatic image segmentation techniques.
-* [ ] Introduce Machine Learning algorithms for diagnostic classification.
+* [x] ~~Implement contrast enhancement filters (Histogram Equalization).~~ (Concluído!)
+* [x] ~~Explore automatic image segmentation techniques.~~ (Concluído com Detecção de Bordas!)
+* [x] ~~Introduce Machine Learning algorithms for diagnostic classification.~~ (Concluído com o Classificador de Ruído!)
+* [ ] **(Next Step)** Dive into **Deep Learning (Module 6)**, building Convolutional Neural Networks (CNNs) to allow the AI to learn features automatically from raw pixels.
+* [ ] Apply Deep Learning to a real-world problem, such as pneumonia classification or tumor segmentation.
 
 ---
 *This project is being developed with guidance from Gemini AI.*
