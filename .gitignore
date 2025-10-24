@@ -3,3 +3,5 @@ __pycache__/
 .DS_Store
 Obsidian Vault/
 notebooks/archive_experiments/
+data/processed/chest_xray/_MACOSX/
+.gitignore
